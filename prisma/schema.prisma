@@ -1,0 +1,529 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  email       String   @unique
+  password    String
+  role        String
+  createdAt   DateTime @default(now())
+  active      Boolean  @default(true)
+
+  @@map("users")
+}
+
+model RegistrationRequest {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  email        String   @unique
+  password     String
+  role         String
+  requestDate  DateTime @default(now())
+  status       String   @default("pending")
+
+  @@map("registration_requests")
+}
+
+model Beneficiarios {
+  id                        Int       @id @default(autoincrement())
+  apelido                   String?
+  cpf                       String?   @unique @db.Char(11)
+  sexo                      String?
+  estado_civil              String?
+  nome_mae                  String?
+  nome_conjugue             String?
+  naturalidade              String?
+  n_membro_familia          Int?
+  renda_familiar            Float?
+  data_nascimento           DateTime?
+  dap                       String?
+  data_dap                  DateTime?
+  tipo_dap                  String?
+  programa_governamental    String?
+  outro_programa_governamental String?
+  nis                       String?
+  contato                   String?
+  categoria_beneficiario    String?
+  associado                 Boolean?
+  associacao                String?
+  nome_completo             String?
+  credito_rural             Boolean?
+  tipo_credito_rural        String?
+
+  propriedades              Propriedades[]
+
+  @@map("beneficiarios")
+}
+
+model Propriedades {
+  id                    Int              @id @default(autoincrement())
+  geom                  Bytes?
+  car                   Boolean?
+  n_recibo_car          String?
+  nome_propriedade      String?
+  area                  Float?
+  comunidade            String?
+  distrito              String?
+  situacao_fundiaria    String?
+  tipo_documento        String?
+  beneficiario_id       Int
+  beneficiario          Beneficiarios    @relation(fields: [beneficiario_id], references: [id], onDelete: Cascade)
+  visitas               Visitas[]
+  recursosHidricos      RecursosHidricos[]
+  agriculturas          Agriculturas[]
+  pecuarias             Pecuarias[]
+  aquiculturas          Aquiculturas[]
+  artesanatos           Artesanatos[]
+  apiculturas           Apiculturas[]
+  outrasAtividades      OutrasAtividades[]
+
+  @@map("propriedades")
+}
+
+model Cisternas {
+  id                    Int              @id @default(autoincrement())
+  tipo_cisterna         String?
+  capacidade_armazenamento Float?
+
+  recursosHidricos      RecursosHidricos[]
+
+  @@map("cisternas")
+}
+
+model CarrosPipa {
+  id                    Int              @id @default(autoincrement())
+  fornecedor_carro_pipa String?
+  quantidade_mes_litro  Float?
+
+  recursosHidricos      RecursosHidricos[]
+
+  @@map("carros_pipa")
+}
+
+model Pocos {
+  id                    Int              @id @default(autoincrement())
+  propriedade_poco      String?
+  qualidade             String?
+  bomba                 Boolean?
+  vazao                 Float?
+
+  recursosHidricos      RecursosHidricos[]
+
+  @@map("pocos")
+}
+
+model Acudes {
+  id                    Int              @id @default(autoincrement())
+  propriedade           String?
+  capacidade_armazenamento Float?
+  recursosHidricos      RecursosHidricos[]
+
+  @@map("acudes")
+}
+
+model Banheiros {
+  id                    Int              @id @default(autoincrement())
+  n_banheiros           Int?
+  fossa                 Boolean?
+  outros                String?
+
+  recursosHidricos      RecursosHidricos[]
+
+  @@map("banheiros")
+}
+
+model Agriculturas {
+  id                    Int              @id @default(autoincrement())
+  data_colheita         DateTime?
+  producao_ano          Int?
+  irrigacao             Boolean?
+  destinacao_venda      Int?
+  area_cultivo          Float?
+  data_plantio          DateTime?
+  destinacao_casa       Int?
+  valor_comercializado  Float?
+  cultura               String?
+  propriedade_id        Int
+  visita_id             Int?
+  propriedade           Propriedades     @relation(fields: [propriedade_id], references: [id], onDelete: Restrict)
+
+  @@map("agriculturas")
+}
+
+model Pecuarias {
+  id                         Int              @id @default(autoincrement())
+  especie                    String?
+  quantidade                 Int?
+  aptidao_corte              Boolean?
+  aptidao_leite              Boolean?
+  aptidao_postura            Boolean?
+  tipo_cricao_intensivo      Boolean?
+  tipo_cricao_semi_intensivo Boolean?
+  tipo_cricao_extensivo      Boolean?
+  destinacao_casa            Float?
+  raca_predominante          String?
+  valor_comercializacao      Float?
+  destinacao_venda           Float?
+  propriedade_id             Int
+  visita_id                  Int?
+  propriedade                Propriedades     @relation(fields: [propriedade_id], references: [id], onDelete: Restrict)
+
+  @@map("pecuarias")
+}
+
+model Aquiculturas {
+  id                          Int              @id @default(autoincrement())
+  aptidao_corte               Boolean?
+  aptidao_reproducao          Boolean?
+  lamina_agua                 String?
+  quantidade                  Int?
+  cultura                     String?
+  especie                     String?
+  valor_comercializacao       Float?
+  tipo_cricao_super_intensivo Boolean?
+  tipo_cricao_intensivo       Boolean?
+  tipo_cricao_semi_intensivo  Boolean?
+  tipo_cricao_extensivo       Boolean?
+  destinacao_casa             Int?
+  destinacao_verda            Int?
+  propriedade_id              Int
+  visita_id                   Int?
+  propriedade                 Propriedades     @relation(fields: [propriedade_id], references: [id], onDelete: Restrict)
+
+  @@map("aquiculturas")
+}
+
+model Artesanatos {
+  id                    Int              @id @default(autoincrement())
+  produto               String?
+  destinacao_valor      String?
+  propriedade_id        Int
+  visita_id             Int?
+  propriedade           Propriedades     @relation(fields: [propriedade_id], references: [id], onDelete: Restrict)
+
+  @@map("artesanatos")
+}
+
+model Apiculturas {
+  id                    Int              @id @default(autoincrement())
+  com_ferrao            Boolean
+  sem_ferrao            Boolean
+  n_colmeias            Int?
+  destinacao_mel        String?
+  tipo_criacao          Boolean?
+  tipo_extrativismo     Boolean?
+  propriedade_id        Int
+  visita_id             Int?
+  propriedade           Propriedades     @relation(fields: [propriedade_id], references: [id], onDelete: Restrict)
+
+  @@map("apiculturas")
+}
+
+model Visitas {
+  numero                Int              @id @default(autoincrement())
+  data                  DateTime?
+  tecnico_responsavel   String?
+  data_ultima_visita    DateTime?
+  diagnostico           String?
+  recomendacoes         String?
+  finalidade_visita     String?
+  propriedade_id        Int
+  propriedade           Propriedades     @relation(fields: [propriedade_id], references: [id], onDelete: Cascade)
+
+  @@map("visitas")
+}
+
+model OutrasAtividades {
+  id                    Int              @id @default(autoincrement())
+  tipo                  String?
+  descricao             String?
+  propriedade_id        Int
+  visita_id             Int?
+  propriedade           Propriedades     @relation(fields: [propriedade_id], references: [id], onDelete: Restrict)
+
+  @@map("outras_atividades")
+}
+
+model PocosAmazonas {
+  id                    Int              @id @default(autoincrement())
+  qualidade             String?
+  propriedade           String?
+  bomba                 Boolean?
+  vazao                 Float?
+
+  recursosHidricos      RecursosHidricos[]
+
+  @@map("pocos_amazonas")
+}
+
+model Barragens {
+  id                    Int              @id @default(autoincrement())
+  capacidade_armazenamento Float?
+  propriedade           String?
+
+  recursosHidricos      RecursosHidricos[]
+
+  @@map("barragens")
+}
+
+model RecursosHidricos {
+  id                    Int              @id @default(autoincrement())
+  propriedade_id        Int
+  carro_pipa_id         Int?
+  poco_id               Int?
+  poco_amazonas_id      Int?
+  acude_id              Int?
+  barragem_id           Int?
+  banheiro_id           Int?
+  cisternas_id          Int?
+
+  propriedade           Propriedades     @relation(fields: [propriedade_id], references: [id], onDelete: Restrict)
+  carrosPipa            CarrosPipa?      @relation(fields: [carro_pipa_id], references: [id])
+  poco                  Pocos?           @relation(fields: [poco_id], references: [id])
+  pocoAmazonas          PocosAmazonas?   @relation(fields: [poco_amazonas_id], references: [id])
+  acude                 Acudes?          @relation(fields: [acude_id], references: [id])
+  barragem              Barragens?       @relation(fields: [barragem_id], references: [id])
+  banheiro              Banheiros?       @relation(fields: [banheiro_id], references: [id])
+  cisterna              Cisternas?       @relation(fields: [cisternas_id], references: [id])
+
+  @@map("recursos_hidricos")
+}
+
+
+
+
+model CisternaCalcadao {
+  id       Int    @id @default(autoincrement())
+  geom     Bytes?
+  numero   BigInt?
+  nome     String? @db.VarChar(254)
+  local    String? @db.VarChar(254)
+  tipo     String? @db.VarChar(254)
+  latitude String? @db.VarChar(254)
+  longitude String? @db.VarChar(254)
+  layer    String?
+
+  @@map("cisterna_calcadao")
+}
+
+model CisternaPrograma1Mcr {
+  id       Int    @id @default(autoincrement())
+  geom     Bytes?
+  numero   BigInt?
+  nome     String? @db.VarChar(254)
+  local    String? @db.VarChar(254)
+  tipo     String? @db.VarChar(254)
+  latitude String? @db.VarChar(254)
+  longitude String? @db.VarChar(254)
+  ano      BigInt?
+  layer    String?
+
+  @@map("cisterna_programa_1mcr")
+}
+
+model CisternaPrograma1Mcr2011Escolas {
+  id       Int    @id @default(autoincrement())
+  geom     Bytes?
+  numero   BigInt?
+  nome     String? @db.VarChar(254)
+  local    String? @db.VarChar(254)
+  tipo     String? @db.VarChar(254)
+  latitude String? @db.VarChar(254)
+  longitude String? @db.VarChar(254)
+  nome_escol String? @db.VarChar(254)
+
+  @@map("cisterna_programa_1mcr_2011_escolas")
+}
+
+model Comunidade {
+  id       Int    @id @default(autoincrement())
+  geom     Bytes?
+  nome     String? @db.VarChar(11)
+  distritos String? @db.VarChar(25)
+
+  @@map("comunidade")
+}
+
+model DrenagemSt {
+  id         Int     @id @default(autoincrement())
+  geom       Bytes?
+  segment_id  BigInt? @map("segment_id")
+  nodeA      BigInt? @map("node_a")
+  nodeB      BigInt? @map("node_b")
+  basin      BigInt?
+  order      BigInt?
+  order_cell  BigInt? @map("order_cell")
+  length     Float?
+
+  @@map("drenagem_st")
+}
+
+model EstradaBr232 {
+  id       Int     @id @default(autoincrement())
+  geom     Bytes?
+  identifier BigInt?
+  comp_km   Float? @map("comp_km")
+
+  @@map("estrada_br_232")
+}
+
+model EstradaComPavimentacao {
+  id         Int     @id @default(autoincrement())
+  geom       Bytes?
+  identifier BigInt?
+
+  @@map("estrada_com_pavimentacao")
+}
+
+model EstradaPe320 {
+  id         Int     @id @default(autoincrement())
+  geom       Bytes?
+  identifier BigInt?
+
+  @@map("estrada_pe_320")
+}
+
+model EstradaPe365 {
+  id         Int     @id @default(autoincrement())
+  geom       Bytes?
+  identifier BigInt?
+
+  @@map("estrada_pe_365")
+}
+
+model EstradaPe390 {
+  id         Int     @id @default(autoincrement())
+  geom       Bytes?
+  identifier BigInt?
+
+  @@map("estrada_pe_390")
+}
+
+model EstradaPe418 {
+  id         Int     @id @default(autoincrement())
+  geom       Bytes?
+  identifier BigInt?
+
+  @@map("estrada_pe_418")
+}
+
+model EstradaSemPavimentacao {
+  id         Int     @id @default(autoincrement())
+  geom       Bytes?
+  identifier BigInt?
+  id2        BigInt? @map("id_2")
+  id2_2      BigInt? @map("id_2_2")
+  id2_2_2    BigInt? @map("id_2_2_2")
+  id3        BigInt? @map("id_3")
+
+  @@map("estrada_sem_pavimentacao")
+}
+
+model LimitesSt {
+  id        Int     @id @default(autoincrement())
+  geom      Bytes?
+  cd_mun    String? @db.VarChar(7) @map("cd_mun")
+  nm_mun    String? @db.VarChar(60) @map("nm_mun")
+  sigla     String? @db.VarChar(2)
+  area_km2  Float?  @map("area_km2")
+
+  @@map("limites_st")
+}
+
+model NascenteSt {
+  id        Int     @id @default(autoincrement())
+  geom      Bytes?
+  node_id   BigInt? @map("node_id")
+  type      String? @db.VarChar(8)
+
+  @@map("nascente_st")
+}
+
+model PocoSt {
+  id       Int     @id @default(autoincrement())
+  geom     Bytes?
+  nome     String? @db.VarChar(254)
+  local    String? @db.VarChar(254)
+  latitude String? @db.VarChar(254)
+  longitude String? @db.VarChar(254)
+
+  @@map("poco_st")
+}
+
+model ReservatorioPocoSt {
+  id          Int     @id @default(autoincrement())
+  geom        Bytes?
+  numero      BigInt?
+  proprietario String? @db.VarChar(254)
+  local       String? @db.VarChar(254)
+  empresa_va   String? @db.VarChar(254) @map("empresa_va")
+  captacao    String? @db.VarChar(254)
+  latitude    String? @db.VarChar(254)
+  longitude   String? @db.VarChar(254)
+
+  @@map("reservatorio_poco_st")
+}
+
+model SubBaciaSt {
+  id       BigInt   @id @default(autoincrement())
+  geom     Bytes?
+  value    BigInt?
+  name     String? @db.VarChar(2)
+
+  @@map("sub_bacia_st")
+}
+
+model Distritos {
+  id         Int        @id @default(autoincrement())
+  geom       Bytes?
+  cdRegiao   String?    @db.VarChar(1)   @map("CD_REGIAO")
+  nmRegiao   String?    @db.VarChar(20)  @map("NM_REGIAO")
+  cdUf       String?    @db.VarChar(2)   @map("CD_UF")
+  nmUf       String?    @db.VarChar(50)  @map("NM_UF")
+  cdMun      String?    @db.VarChar(7)   @map("CD_MUN")
+  nmMun      String?    @db.VarChar(100) @map("NM_MUN")
+  cdDist     String?    @db.VarChar(9)   @map("CD_DIST")
+  nmDist     String?    @db.VarChar(100) @map("NM_DIST")
+
+  @@map("distritos")
+}
+
+model massa_dagua_st {
+  id         Int     @id @default(autoincrement())
+  geom       Bytes
+  nome       String? @db.VarChar(150)
+  geometriaa String? @db.VarChar(80)
+  tipomassad String? @db.VarChar(80)
+  regime     String? @db.VarChar(80)
+  salgada    String? @db.VarChar(80)
+  dominialid String? @db.VarChar(80)
+  artificial String? @db.VarChar(80)
+  possuitrec String? @db.VarChar(80)
+
+  @@map("massa_dagua_st")
+}
+
+model areas_urbanizadas_st {
+  id         Int     @id @default(autoincrement())
+  geom       Bytes
+  densidade  String? @db.VarChar(50)
+  tipo       String? @db.VarChar(100)
+  comparacao String? @db.VarChar(150)
+
+  @@map("areas_urbanizadas_st")
+}
+
+
