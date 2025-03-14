@@ -60,6 +60,7 @@ import { ListProtectionLayerController } from "./controllers/protection-layer/Li
 
 import { ListRecentVisitByPropertyController } from "./controllers/visit/ListRecentVisitByPropertyController";
 import { CreateVisitController } from "./controllers/visit/CreateVisitController";
+import { ListVisitsController } from "./controllers/visit/ListVisitsController";
 
 import { isAuthenticated } from "./middlewares/isAuthenticated";
 import { ListProductiveActivityByActivityController } from "./controllers/productive-activity/ListProductiveActivityByActivityController";
@@ -290,6 +291,7 @@ router.get(
 
 router.post("/visit", isAuthenticated, new CreateVisitController().handle);
 
+router.get("/visits", isAuthenticated, new ListVisitsController().handle);
 router.get(
   "/properties/:property_id/visits/most-recent",
   isAuthenticated,
