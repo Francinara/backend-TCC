@@ -46,6 +46,7 @@ const ListUrbanizedAreaController_1 = require("./controllers/urbanized-area/List
 const ListProtectionLayerController_1 = require("./controllers/protection-layer/ListProtectionLayerController");
 const ListRecentVisitByPropertyController_1 = require("./controllers/visit/ListRecentVisitByPropertyController");
 const CreateVisitController_1 = require("./controllers/visit/CreateVisitController");
+const ListVisitsController_1 = require("./controllers/visit/ListVisitsController");
 const isAuthenticated_1 = require("./middlewares/isAuthenticated");
 const ListProductiveActivityByActivityController_1 = require("./controllers/productive-activity/ListProductiveActivityByActivityController");
 const router = (0, express_1.Router)();
@@ -110,4 +111,5 @@ router.get("/urbanized-areas", isAuthenticated_1.isAuthenticated, new ListUrbani
 router.get("/protection-layer", isAuthenticated_1.isAuthenticated, new ListProtectionLayerController_1.ListProtectionLayerController().handle);
 //visit
 router.post("/visit", isAuthenticated_1.isAuthenticated, new CreateVisitController_1.CreateVisitController().handle);
+router.get("/visits", isAuthenticated_1.isAuthenticated, new ListVisitsController_1.ListVisitsController().handle);
 router.get("/properties/:property_id/visits/most-recent", isAuthenticated_1.isAuthenticated, new ListRecentVisitByPropertyController_1.ListRecentVisitByPropertyController().handle);
