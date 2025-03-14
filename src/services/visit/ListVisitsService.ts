@@ -11,7 +11,7 @@ class ListVisitsService {
 
       return result;
     } catch (error) {
-      throw new Error(`Error fetching visits.. Error: ${error}`);
+      throw new Error(`Error fetching visits. Error: ${error}`);
     }
   }
 }
