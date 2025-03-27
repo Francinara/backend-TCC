@@ -292,6 +292,7 @@ router.get(
 router.post("/visit", isAuthenticated, new CreateVisitController().handle);
 
 router.get("/visits", isAuthenticated, new ListVisitsController().handle);
+
 router.get(
   "/properties/:property_id/visits/most-recent",
   isAuthenticated,

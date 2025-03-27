@@ -15,12 +15,64 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListVisitsService = void 0;
 const prisma_1 = __importDefault(require("../../prisma"));
 class ListVisitsService {
-    execute() {
+    execute(filters) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const result = yield prisma_1.default.visitas.findMany({
+                    where: Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign(Object.assign({}, (filters.numero && {
+                        numero: {
+                            equals: parseInt(filters.numero, 10),
+                        },
+                    })), (filters.data_inicio || filters.data_fim
+                        ? {
+                            data: Object.assign(Object.assign({}, (filters.data_inicio && {
+                                gte: new Date(filters.data_inicio),
+                            })), (filters.data_fim && { lte: new Date(filters.data_fim) })),
+                        }
+                        : filters.data
+                            ? {
+                                data: {
+                                    equals: new Date(filters.data),
+                                },
+                            }
+                            : {})), (filters.tecnico_responsavel && {
+                        tecnico_responsavel: {
+                            contains: filters.tecnico_responsavel,
+                            mode: "insensitive",
+                        },
+                    })), (filters.data_ultima_visita_inicio ||
+                        filters.data_ultima_visita_fim
+                        ? {
+                            data_ultima_visita: Object.assign(Object.assign({}, (filters.data_ultima_visita_inicio && {
+                                gte: new Date(filters.data_ultima_visita_inicio),
+                            })), (filters.data_ultima_visita_fim && {
+                                lte: new Date(filters.data_ultima_visita_fim),
+                            })),
+                        }
+                        : filters.data_ultima_visita
+                            ? {
+                                data_ultima_visita: {
+                                    equals: new Date(filters.data_ultima_visita),
+                                },
+                            }
+                            : {})), (filters.diagnostico && {
+                        diagnostico: {
+                            contains: filters.diagnostico,
+                            mode: "insensitive",
+                        },
+                    })), (filters.recomendacoes && {
+                        recomendacoes: {
+                            contains: filters.recomendacoes,
+                            mode: "insensitive",
+                        },
+                    })), (filters.finalidade_visita && {
+                        finalidade_visita: {
+                            contains: filters.finalidade_visita,
+                            mode: "insensitive",
+                        },
+                    })),
                     orderBy: {
-                        data: "desc",
+                        numero: "asc",
                     },
                 });
                 return result;
